@@ -6,15 +6,22 @@ Crie um script que leia o arquivo capturado (pcap) e analise os dados dos pacote
 
 ## Tarefa 3
 
-Análise do Dataset escolhido.
+Gerar um scatterplot do dataset escolhido e analisar os resultados. Além de analisar o dataset escolhido.
+O dataset se mostrou muito grande (Travando meu pc :( ). Dessa forma, houve uma diminuição no número de amostras para 
 Informações obtidas:
 
 ##### Quantidade de amostras
 O dataset é composto por 12794627 datapoints
 Cada datapoint corresponde a um fluxo (ida e volta)
 
+**OBS:** Para a geração do scatterplot foi utilizado um dataset parcial de 100 mil amostras.
+
 ##### Classificação
-Os datapoints são classificados em benignos ou DDoS
+Os datapoints são classificados em :
+- Benigno (49%)
+- DDoS (51%)
+
+**OBS:** Para a geração do scatterplot foi utilizado um dataset tinha 50% de amostras de ddos e 50% de amostras benignas
 
 ##### Características
 Os datapoints são compostos de 84 características, sendo elas:
@@ -22,14 +29,14 @@ Os datapoints são compostos de 84 características, sendo elas:
 | ------ | ------ |
 | FlowID | Identificador do fluxo |
 | SRC IP | IP de Origem |
-| SRC Port | Porta de Origem |
+| SRC Port * | Porta de Origem |
 | DST IP | IP de Destino |
-| DST Port | Porta de Destino |
+| DST Port  * | Porta de Destino |
 | Protocolo | Protocolo utilizado |
 | Timestamp | Marca Temporal |
-| fl_dur |	Flow duration |
-| tot_fw_pk |	Total packets in the forward direction |
-| tot_bw_pk |	Total packets in the backward direction |
+| fl_dur * |	Flow duration |
+| tot_fw_pk * |	Total packets in the forward direction |
+| tot_bw_pk * |	Total packets in the backward direction |
 | tot_l_fw_pkt |	Total size of packet in forward direction |
 | tot_l_bw_pkt |	Total size of packet in backward direction |
 | fw_pkt_l_max |	Maximum size of packet in forward direction |
@@ -40,8 +47,8 @@ Os datapoints são compostos de 84 características, sendo elas:
 | Bw_pkt_l_min |	Minimum size of packet in backward direction|
 | Bw_pkt_l_avg |	Mean size of packet in backward direction|
 | Bw_pkt_l_std |	Standard deviation size of packet in backward direction|
-| fl_byt_s |	flow byte rate that is number of packets transferred per second|
-| fl_pkt_s |	flow packets rate that is number of packets transferred per second|
+| fl_byt_s * |	flow byte rate that is number of packets transferred per second|
+| fl_pkt_s * |	flow packets rate that is number of packets transferred per second|
 | fl_iat_avg |	Average time between two flows|
 | fl_iat_std |	Standard deviation time two flows|
 | fl_iat_max |	Maximum time between two flows|
@@ -62,8 +69,8 @@ Os datapoints são compostos de 84 características, sendo elas:
 | bw_urg_flag |	Number of times the URG flag was set in packets travelling in the backward direction (0 for UDP)|
 | fw_hdr_len |	Total bytes used for headers in the forward direction|
 | bw_hdr_len |	Total bytes used for headers in the forward direction|
-| fw_pkt_s |	Number of forward packets per second|
-| bw_pkt_s 	|Number of backward packets per second|
+| fw_pkt_s * |	Number of forward packets per second|
+| bw_pkt_s *	|Number of backward packets per second|
 | pkt_len_min | 	Minimum length of a flow|
 | pkt_len_max |	Maximum length of a flow|
 | pkt_len_avg |	Mean length of a flow|
@@ -78,7 +85,7 @@ Os datapoints são compostos de 84 características, sendo elas:
 | cwe_cnt |	Number of packets with CWE|
 | ece_cnt |	Number of packets with ECE|
 | down_up_ratio |	Download and upload ratio|
-| pkt_size_avg| 	Average size of packet|
+| pkt_size_avg * | 	Average size of packet|
 | fw_seg_avg |	Average size observed in the forward direction|
 | bw_seg_avg |	Average size observed in the backward direction|
 | fw_byt_blk_avg |	Average number of bytes bulk rate in the forward direction|
@@ -103,4 +110,7 @@ Os datapoints são compostos de 84 características, sendo elas:
 | idl_std |	Standard deviation time a flow was idle before becoming active|
 | idl_max |	Maximum time a flow was idle before becoming active|
 | idl_min |	Minimum time a flow was idle before becoming active|
-| label | Classificação |
+| label * | Classificação |
+
+**OBS:** *Características que fizeram parte do scatterplot 
+
