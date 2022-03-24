@@ -152,7 +152,7 @@ O vetor é composto por 79 características.
 
 ##### Apresente graficamente a distribuição dos seus dados por classe em um gráfico de barras (quantas amostras por classe)
 
-(https://github.com/fequiles/CienciaDadosSeguranca/blob/main/Tarefa4/Benign_X_DDoS.png)
+![Benign X DDoS](https://github.com/fequiles/CienciaDadosSeguranca/blob/main/Tarefa4/Benign_X_DDoS.png)
 
 O dataset tem 12794627 datapoints, sendo 51% classificados como benigno e 49% classificados como DDoS, mas a quantidade de bytes para armazenar a totalidade destes dados é extremamente alta. Dessa forma, para se seguir com o projeto e também visando o treinamento de um algoritmo de aprendizado de máquina, foi realizado uma seleção aleatória de 500 amostras benignas e 500 amostras DDoS, finalizando em 50% de cada classe. A quantidade de amostras pode sofrer alterações no prosseguimento do projeto, podendo aumentar ou diminuir, mas a princípio será mantida a divisão de 50% de amostras para cada classe.
 
