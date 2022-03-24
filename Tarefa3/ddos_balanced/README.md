@@ -108,3 +108,6 @@ Os datapoints são compostos de 84 características, sendo elas:
 
 **OBS:** *Características que fizeram parte do scatterplot 
 
+##### Distinguiveis?
+Não, os dados não se mostraram distinguíveis entre si quando se compara pela classe dos mesmos
+
