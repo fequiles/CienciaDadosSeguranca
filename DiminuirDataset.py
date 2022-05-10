@@ -1,6 +1,6 @@
-'''
+"""
 Author: Felipe Ribeiro Quiles    Mestrado: 40001016034P5 
-'''
+"""
 from turtle import color
 import pandas as pd
 from pandas.plotting import scatter_matrix
@@ -10,9 +10,10 @@ import csv
 
 # Funcao que normatiza os dados do dataset
 def normatizeMatrix(matrix):
+        """Normatiza a Matriz de Caracteristicas"""
         max_value = -1000
         min_value = 100000000
-        for x in range (0,11):
+        for x in range (0,78):
                 for y in range (1,100000):
                         if matrix[y][x] != '':
                                 matrix[y][x] = float(matrix[y][x])
@@ -42,7 +43,7 @@ matrix = []
 count = 0 
 
 # Retira os 50 mil primeiros dados de ddos
-for row in range (0,25001):
+for row in range (0,250001):
         line = next(csvreader)
 
         for i in range(0,3):
@@ -62,7 +63,7 @@ for row in range (0,25001):
 
 # Retira os 50 mil ultimos dados benignos 
 for row in csvreader:
-        if count < 12744627:
+        if count < 12294627:
                 count += 1
         else:
                 for i in range(0,3):
@@ -79,7 +80,6 @@ for row in csvreader:
                                 row[x] = 0.0
                 matrix.append(row)
 
-
 writer.writerows(matrix)
 
 header = matrix.pop(0)
@@ -89,46 +89,13 @@ matriz_caracteristicas = pd.DataFrame(matrix, columns= header)
 matriz_caracteristicas.replace([np.inf, -np.inf], np.nan, inplace=True)
 matriz_caracteristicas = matriz_caracteristicas.dropna()
 
+
 #Filtra DataFrame de acordo com o valor do rotulo
 cond = (matriz_caracteristicas["Classe"] == 0)
 benign = matriz_caracteristicas.loc[cond,:]
 print(len(benign))
 cond = (matriz_caracteristicas["Classe"] == 1)
 ddos = matriz_caracteristicas.loc[cond,:]
+print(len(ddos))
 
-'''normatizeMatrix(matrix)
-
-header = matrix.pop(0)
-
-#teste = pd.DataFrame(matrix, columns= header)
-
-header[-1] = "Classe"
-
-matriz_caracteristicas = pd.DataFrame(matrix, columns= header)
-
-
-#Filtra DataFrame de acordo com o valor do rotulo
-cond = (matriz_caracteristicas["Classe"] == 0)
-benign = matriz_caracteristicas.loc[cond,:]
-cond = (matriz_caracteristicas["Classe"] == 1)
-ddos = matriz_caracteristicas.loc[cond,:]
-
-
-#Seleciona aleatoriamente 500 amostras de cada classe
-benign_frame = benign.sample(n=500)
-ddos_frame = ddos.sample(n=500)
-
-frames = [benign_frame, ddos_frame]
-
-#Concatena os frames de benignos e ddos
-amostragem = pd.concat(frames)
-
-colors = list('red' if i==1 else 'blue' for i in amostragem['Classe'])
-
-print(len(amostragem))
-
-# Geracao do scatterplot
-scatter_matrix(amostragem, color=colors, alpha=0.2, figsize=(25,25))
-
-plt.show()'''
 
