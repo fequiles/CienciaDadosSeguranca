@@ -29,7 +29,7 @@ def normatizeMatrix(matrix):
                 min_value = 100000000 
 
 # Abre o dataset parcial ja filtrado
-file = open ("final_dataset.csv")
+file = open ("../final_dataset.csv")
 
 csvreader = csv.reader(file)
 
@@ -39,6 +39,9 @@ count = 0
 # Retira os 50 mil primeiros dados de ddos
 for row in range (0,1001):
         line = next(csvreader)
+
+        if row == 1:
+                print (line)
 
         for i in range(0,3):
                 line.pop(0)

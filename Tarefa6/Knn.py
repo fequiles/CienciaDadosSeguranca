@@ -59,11 +59,12 @@ for row in range (0,50001):
 
 header = matrix.pop(0)
 header[-1] = "Classe"
+normatizeMatrix(matrix)
 
 matriz_caracteristicas = pd.DataFrame(matrix, columns= header)
 matriz_caracteristicas.replace([np.inf, -np.inf], np.nan, inplace=True)
 matriz_caracteristicas = matriz_caracteristicas.dropna()
-normatizeMatrix(matrix)
+
 
 #Filtra DataFrame de acordo com o valor do rotulo
 cond = (matriz_caracteristicas["Classe"] == 0)

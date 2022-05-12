@@ -20,7 +20,10 @@ import joblib
 import sys
 
 def plot_confusionMatrix(df_confusion, clf_name):
-        ax = sns.heatmap(df_confusion, annot=True, fmt='g', cmap='Blues')
+        print ("Matriz Confusao - {}".format(clf_name))
+        print (df_confusion)
+        print ()
+        '''ax = sns.heatmap(df_confusion, annot=True, fmt='g', cmap='Blues')
 
         ax.set_title('Matrix de Confusão do {}\n\n'.format(clf_name))
         ax.set_xlabel('\nPredicted Values')
@@ -32,7 +35,10 @@ def plot_confusionMatrix(df_confusion, clf_name):
 
         ## Display the visualization of the Confusion Matrix.
         plt.savefig("CF-{}-Complete".format(clf_name))
-        plt.show()
+        plt.show()'''
+
+def adjusted_classes(y_scores, t):
+    return [1 if y >= t else 0 for y in y_scores]
 
 def plot_ROC_Folding(skf, clf, clf_name, label):
         plt.figure(figsize=(10,10))
@@ -44,59 +50,47 @@ def plot_ROC_Folding(skf, clf, clf_name, label):
                 X_train_kfold, X_test_kfold = X.values[train_index], X.values[test_index]
                 y_train_kfold, y_test_kfold = y.values[train_index], y.values[test_index]
 
-                y_scores = clf.predict_proba(X_test_kfold)[:, 1]
+                training_init = time.time()
+                clf.fit(X_train_kfold, y_train_kfold)
+                training_end = time.time()
+                training_time = training_end - training_init
+                print('Tempo de treinamento para o {}-Fold{}: {}'.format(clf_name, fold, training_time))
+
+                y_scores = clf.predict_proba(X_test_kfold)[:,1]
                 fpr, tpr, auc_thresholds = roc_curve(y_test_kfold, y_scores)
                 print('Auc Fold {}: {}'.format(fold, auc(fpr, tpr)))
-                plt.plot(fpr, tpr, linewidth=2, label='Fold {}'.format(fold))
+                plt.plot(fpr, tpr, linewidth=2, label='Fold {} - auc{}'.format(fold, auc(fpr, tpr)))
+
+                plot_confusionMatrix(pd.DataFrame(confusion_matrix(y_test_kfold, adjusted_classes(y_scores, 0.5))), "{} - Fold {}".format(clf_name, fold))
                 fold += 1 
         plt.axis([-0.005, 1, 0, 1.005])
-        plt.xticks(np.arange(0,1, 0.05), rotation=90)
+        plt.xticks(np.arange(0,1, 0.2), rotation=90)
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate (Recall)")
         plt.legend(loc='best')
         plt.savefig("ROC-5Folds-{}".format(clf_name))
-        plt.show()
+        plt.close()
         print()
-
-def adjusted_classes(y_scores, t):
-    return [1 if y >= t else 0 for y in y_scores]
-
-def plot_CF_Folding(skf, clf, clf_name, label):
-        fold = 0
-
-        for train_index, test_index in skf.split(X, y):
-                X_train_kfold, X_test_kfold = X.values[train_index], X.values[test_index]
-                y_train_kfold, y_test_kfold = y.values[train_index], y.values[test_index]
-
-                y_scores = clf.predict_proba(X_test_kfold)[:, 1]
-                plot_confusionMatrix(pd.DataFrame(confusion_matrix(y_test_kfold, adjusted_classes(y_scores, 0.5))), "{}-fold-{}".format(clf_name, fold))
-                fold += 1 
 
 def gridSearchBetter(clf_name, testSize, refit_score='precision_score'):
         skf = StratifiedShuffleSplit(n_splits=5, test_size=testSize, random_state=1)
         grid_search = GridSearchCV(clf, param_grid, scoring=scorers, refit=refit_score,
                                cv=skf, return_train_score=True, n_jobs=-1)
 
-        training_init = time.time()
+        plot_ROC_Folding(skf, grid_search, clf_name, "precision_optmized")
+
+        # make the predictions
         grid_search.fit(X_train.values, y_train.values)
-        training_end = time.time()
-        training_time = training_end - training_init
+        y_pred = grid_search.predict(X_test.values)
 
         print()
         print('Melhores parametros do {} para o {}'.format(clf_name, refit_score))
         print(grid_search.best_params_)
+        print('Melhor score do {} para o {}'.format(clf_name, refit_score))
+        print(grid_search.best_score_)
         print()
+        plot_confusionMatrix(pd.DataFrame(confusion_matrix(y_test.values, y_pred)), "MC{}".format(clf_name))
 
-        print('Tempo de treinamento para o {}: {}'.format(clf_name, training_time))
-
-        # make the predictions
-        y_pred = grid_search.predict(X_test.values)
-
-        # confusion matrix on the test data.
-        plot_confusionMatrix(pd.DataFrame(confusion_matrix(y_test, y_pred)), "{} completo".format(clf_name))
-
-        plot_ROC_Folding(skf, grid_search, clf_name, "recall_optimized")
-        plot_CF_Folding(skf, grid_search, clf_name, "recall_optimized")
         print()
         return grid_search
 
@@ -136,7 +130,6 @@ scorers = {
     'accuracy_score': make_scorer(accuracy_score), 
 }
 
-print ("Entrei")
 #KNeighbors
 clf = KNeighborsClassifier(n_jobs=-1)
 
@@ -148,7 +141,7 @@ KN_gridSearch = gridSearchBetter("KNeighbors", test_s, refit_score='precision_sc
 joblib.dump(KN_gridSearch, 'KNeighbors_{}.pkl'.format(test_s))
 
 #RandomForest
-clf = RandomForestClassifier(n_jobs=-1)
+clf = RandomForestClassifier(n_jobs=-1, random_state= 1)#23948)
 param_grid = {
     'n_estimators' : [50, 100]
 }
@@ -166,33 +159,3 @@ param_grid = {
 
 MLP_gridSearch = gridSearchBetter("MLP", test_s, refit_score='precision_score')
 joblib.dump(MLP_gridSearch, 'MLP_{}.pkl'.format(test_s))
-
-#X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size= 0.5, random_state= 1)#2564)
-
-'''clf.fit(X_train, y_train)
-test_preds = clf.predict(X_test)
-mse = mean_squared_error(y_test, test_preds)
-rmse = sqrt(mse)
-print("Erro teste: " + str(rmse))
-
-df_confusion = pd.crosstab(y_test, test_preds)
-
-print ("Accuracy: " + str(accuracy_score(y_test, test_preds)))
-print ("Recall: " + str(recall_score(y_test, test_preds)))
-print ("Precision: " + str(precision_score(y_test, test_preds)))
-print ("F1: " + str(f1_score(y_test, test_preds)))
-
-ax = sns.heatmap(df_confusion, annot=True, fmt='g', cmap='Blues')
-
-ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-ax.set_xlabel('\nPredicted Values')
-ax.set_ylabel('Actual Values ')
-
-## Ticket labels - List must be in alphabetical order
-ax.xaxis.set_ticklabels(['False','True'])
-ax.yaxis.set_ticklabels(['False','True'])
-
-## Display the visualization of the Confusion Matrix.
-plt.show()
-
-#clf_gridSearch = gridSearchBetter("MLP", refit_score='precision_score')'''
